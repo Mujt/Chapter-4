@@ -197,8 +197,30 @@ public class Clock extends View {
     private void drawHoursValues(Canvas canvas) {
         // Default Color:
         // - hoursValuesColor
-
-
+        TextPaint hoursPaint = new TextPaint();
+        hoursPaint.setTextSize(mWidth * 0.07f);
+        hoursPaint.setColor(hoursValuesColor);
+        hoursPaint.setAntiAlias(true);
+        float numX = 0;
+        float numY = 0;
+        double angles = 0;
+        //canvas.drawText("ceshi",mCenterX,mCenterY,hoursPaint);
+        int rEnd = mCenterX - (int) (mWidth * 0.09f);
+        for (int i = 0;i <= 11;i++) {
+            angles = i*30;
+            numX =  (float)(mCenterX + rEnd  * Math.sin(Math.toRadians(angles))*0.95) -  (mWidth * 0.041f);
+            numY =  (float)(mCenterX - rEnd * Math.cos(Math.toRadians(angles))*0.95) +  (mWidth * 0.027f);
+            String hour = "";
+            //System.out.println("x adn y:" + numX + " " + numY);
+            if (i == 0) {
+                hour = "12";
+            } else if (i > 0 && i <10) {
+                hour = "0" + i;
+            } else {
+                hour = "" + i;
+            }
+            canvas.drawText("" + hour,numX,numY,hoursPaint);
+        }
     }
 
     /**
@@ -212,7 +234,39 @@ public class Clock extends View {
         // - secondsNeedleColor
         // - hoursNeedleColor
         // - minutesNeedleColor
+        Calendar calendar = Calendar.getInstance();
 
+        int hour = calendar.get(Calendar.HOUR);
+        int minute = calendar.get(Calendar.MINUTE);
+        int second = calendar.get(Calendar.SECOND);
+        int amPm = calendar.get(Calendar.AM_PM);
+        double angles = 0;
+        float stopX = 0;
+        float stopY = 0;
+
+        Paint needlePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        needlePaint.setStrokeCap(Paint.Cap.ROUND);
+        needlePaint.setStyle(Paint.Style.FILL);
+        needlePaint.setColor(secondsNeedleColor);
+        needlePaint.setStrokeWidth(5f);
+        angles = second * 6;
+        stopX = (float) (mCenterX + mRadius*Math.sin(Math.toRadians(angles))*2/3);
+        stopY = (float) (mCenterX - mRadius*Math.cos(Math.toRadians(angles))*2/3);
+        canvas.drawLine(mCenterX,mCenterY,stopX,stopY,needlePaint);
+
+        needlePaint.setColor(minutesNeedleColor);
+        needlePaint.setStrokeWidth(8f);
+        angles = second * 0.1 + minute * 6;
+        stopX = (float) (mCenterX + mRadius*Math.sin(Math.toRadians(angles))/2);
+        stopY = (float) (mCenterX - mRadius*Math.cos(Math.toRadians(angles))/2);
+        canvas.drawLine(mCenterX,mCenterY,stopX,stopY,needlePaint);
+
+        needlePaint.setColor(hoursNeedleColor);
+        needlePaint.setStrokeWidth(10f);
+        angles = (double)(second + minute * 60)/3600*30 + hour*30;
+        stopX = (float) (mCenterX + mRadius*Math.sin(Math.toRadians(angles))/3);
+        stopY = (float) (mCenterX - mRadius*Math.cos(Math.toRadians(angles))/3);
+        canvas.drawLine(mCenterX,mCenterY,stopX,stopY,needlePaint);
     }
 
     /**
@@ -224,7 +278,12 @@ public class Clock extends View {
         // Default Color:
         // - centerInnerColor
         // - centerOuterColor
-
+        Paint paint = new Paint();
+        paint.setStyle(Paint.Style.FILL_AND_STROKE);
+        paint.setColor(centerOuterColor);
+        canvas.drawCircle(mCenterX,mCenterY,16,paint);
+        paint.setColor(centerInnerColor);
+        canvas.drawCircle(mCenterX,mCenterY,12,paint);
     }
 
     public void setShowAnalog(boolean showAnalog) {
